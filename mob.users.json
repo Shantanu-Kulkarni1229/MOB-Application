@@ -1,0 +1,30 @@
+[{
+  "_id": {
+    "$oid": "67ba0e733b9167cc115eb1fe"
+  },
+  "name": "Admin",
+  "email": "admin@mob.com",
+  "password": "$2b$10$NmtL556KT3etd9DVlNrij.Yxz0qOeINYJ8UAg236O3HmgDwgvNjA6",
+  "role": "admin",
+  "__v": 0,
+  "firstName": "Admin",
+  "lastName": " Admin",
+  "phone": "1234567890",
+  "photo": "/uploads/1740900742827.jpg",
+  "policeStation": "67c1b81ddcd7c12e8dce3370"
+},
+{
+  "_id": {
+    "$oid": "67ba0e8a3b9167cc115eb200"
+  },
+  "name": "Police",
+  "email": "police@mob.com",
+  "password": "$2b$10$R97gyVxn32KQTN8DVb4vduFfAt2lqjJ1pEzIJi9edMSBaAEn1X.5S",
+  "role": "police",
+  "__v": 0,
+  "firstName": "Police",
+  "lastName": "Police",
+  "phone": "123456789",
+  "photo": "/uploads/1740900359450.jpg",
+  "policeStation": "67c1b85ddcd7c12e8dce337c"
+}]

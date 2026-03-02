@@ -1,0 +1,42 @@
+[{
+  "_id": {
+    "$oid": "67c1b705dcd7c12e8dce3321"
+  },
+  "name": "Sillod",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b797dcd7c12e8dce3359"
+  },
+  "name": "Paithan",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b7acdcd7c12e8dce335c"
+  },
+  "name": "CSN Gramin",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b7b7dcd7c12e8dce335f"
+  },
+  "name": "Kannad",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b7cadcd7c12e8dce3362"
+  },
+  "name": "Vaijapur",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b7d5dcd7c12e8dce3365"
+  },
+  "name": "Gangapur",
+  "__v": 0
+}]

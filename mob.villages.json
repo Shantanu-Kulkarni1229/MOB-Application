@@ -1,0 +1,240 @@
+[{
+  "_id": {
+    "$oid": "67c1b776dcd7c12e8dce334e"
+  },
+  "name": "Sillod",
+  "divisionId": {
+    "$oid": "67c1b705dcd7c12e8dce3321"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b81ddcd7c12e8dce3370"
+  },
+  "name": "Sillod Gramin",
+  "divisionId": {
+    "$oid": "67c1b705dcd7c12e8dce3321"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b83bdcd7c12e8dce3374"
+  },
+  "name": "Ajintha",
+  "divisionId": {
+    "$oid": "67c1b705dcd7c12e8dce3321"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b848dcd7c12e8dce3378"
+  },
+  "name": "Soygaon",
+  "divisionId": {
+    "$oid": "67c1b705dcd7c12e8dce3321"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b85ddcd7c12e8dce337c"
+  },
+  "name": "Phardapur",
+  "divisionId": {
+    "$oid": "67c1b705dcd7c12e8dce3321"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b873dcd7c12e8dce3380"
+  },
+  "name": "Paithan",
+  "divisionId": {
+    "$oid": "67c1b797dcd7c12e8dce3359"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b882dcd7c12e8dce3384"
+  },
+  "name": "Paithan MIDC",
+  "divisionId": {
+    "$oid": "67c1b797dcd7c12e8dce3359"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b890dcd7c12e8dce3388"
+  },
+  "name": "Pachod",
+  "divisionId": {
+    "$oid": "67c1b797dcd7c12e8dce3359"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b899dcd7c12e8dce338c"
+  },
+  "name": "Bidkin",
+  "divisionId": {
+    "$oid": "67c1b797dcd7c12e8dce3359"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b8b1dcd7c12e8dce3390"
+  },
+  "name": "Phulmbri",
+  "divisionId": {
+    "$oid": "67c1b7acdcd7c12e8dce335c"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b8bcdcd7c12e8dce3394"
+  },
+  "name": "Karmad",
+  "divisionId": {
+    "$oid": "67c1b7acdcd7c12e8dce335c"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b8cadcd7c12e8dce3398"
+  },
+  "name": "Chikalthana",
+  "divisionId": {
+    "$oid": "67c1b7acdcd7c12e8dce335c"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b8e0dcd7c12e8dce339c"
+  },
+  "name": "Badodbajar",
+  "divisionId": {
+    "$oid": "67c1b7acdcd7c12e8dce335c"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b8f9dcd7c12e8dce33a0"
+  },
+  "name": "Kannad",
+  "divisionId": {
+    "$oid": "67c1b7b7dcd7c12e8dce335f"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1b908dcd7c12e8dce33a4"
+  },
+  "name": "Kannad Gramin",
+  "divisionId": {
+    "$oid": "67c1b7b7dcd7c12e8dce335f"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba37dcd7c12e8dce33a8"
+  },
+  "name": "Khultabad",
+  "divisionId": {
+    "$oid": "67c1b7b7dcd7c12e8dce335f"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba40dcd7c12e8dce33ac"
+  },
+  "name": "Pishor",
+  "divisionId": {
+    "$oid": "67c1b7b7dcd7c12e8dce335f"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba50dcd7c12e8dce33b0"
+  },
+  "name": "Vaijapur",
+  "divisionId": {
+    "$oid": "67c1b7cadcd7c12e8dce3362"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba58dcd7c12e8dce33b4"
+  },
+  "name": "Virgaon",
+  "divisionId": {
+    "$oid": "67c1b7cadcd7c12e8dce3362"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba66dcd7c12e8dce33b8"
+  },
+  "name": "Shirvur",
+  "divisionId": {
+    "$oid": "67c1b7cadcd7c12e8dce3362"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba79dcd7c12e8dce33bc"
+  },
+  "name": "Gangapur",
+  "divisionId": {
+    "$oid": "67c1b7d5dcd7c12e8dce3365"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba86dcd7c12e8dce33c0"
+  },
+  "name": "Shillegaon",
+  "divisionId": {
+    "$oid": "67c1b7d5dcd7c12e8dce3365"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c1ba96dcd7c12e8dce33c4"
+  },
+  "name": "Devgaon Rangari",
+  "divisionId": {
+    "$oid": "67c1b7d5dcd7c12e8dce3365"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67db05c461aca14c8b7dc656"
+  },
+  "name": "CSN Gramin",
+  "divisionId": {
+    "$oid": "67c1b7acdcd7c12e8dce335c"
+  },
+  "__v": 0
+}]
