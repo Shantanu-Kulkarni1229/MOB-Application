@@ -1,17 +1,23 @@
-# 🚔 e-Modus Operandi Bureau (e-MOB)
+# 🚔 e-MOB — e-Modus Operandi Bureau
 
-## Maharashtra Police - Local Crime Branch Management System
+### Digital Case & Accused Records Management System for Maharashtra Police — Local Crime Branch
 
 <div align="center">
 
 ![Maharashtra Police](https://csn.mahapolice.gov.in/t.webp)
 
-**A comprehensive digital solution for managing accused records, crime data, and police operations**
+**A full-stack MERN application that digitizes the registration, search, and reporting of accused records across Police Divisions and Stations — with role-based access, bilingual UI, full audit logging, and official PDF/Excel reporting.**
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-v16+-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-v18.3.1-blue.svg)](https://reactjs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-v5+-green.svg)](https://www.mongodb.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#-license)
+[![Node.js](https://img.shields.io/badge/Node.js-16%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.21-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-8.x-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+[Features](#-feature-highlights) · [Architecture](#-system-architecture) · [Tech Stack](#-technology-stack) · [Workflows](#-core-workflows) · [API](#-api-reference) · [Getting Started](#-getting-started)
 
 </div>
 
@@ -19,299 +25,435 @@
 
 ## 📋 Table of Contents
 
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Technology Stack](#-technology-stack)
-- [System Architecture](#-system-architecture)
-- [Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Backend Installation](#backend-installation)
-  - [Frontend Installation](#frontend-installation)
-- [Configuration](#-configuration)
-- [Usage Guide](#-usage-guide)
-- [API Documentation](#-api-documentation)
-- [User Roles & Permissions](#-user-roles--permissions)
-- [Database Schema](#-database-schema)
-- [Security Features](#-security-features)
-- [Screenshots](#-screenshots)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
+1. [Overview](#-overview)
+2. [Feature Highlights](#-feature-highlights)
+3. [Technology Stack](#-technology-stack)
+4. [System Architecture](#-system-architecture)
+5. [Repository Structure](#-repository-structure)
+6. [Core Workflows](#-core-workflows)
+7. [Data Model / ER Diagram](#-data-model--er-diagram)
+8. [Role-Based Access Control](#-role-based-access-control)
+9. [Getting Started](#-getting-started)
+10. [Environment Variables](#-environment-variables)
+11. [NPM Scripts Reference](#-npm-scripts-reference)
+12. [API Reference](#-api-reference)
+13. [Internationalization](#-internationalization)
+14. [Security Model](#-security-model)
+15. [Known Limitations & Technical Notes](#-known-limitations--technical-notes)
+16. [Troubleshooting](#-troubleshooting)
+17. [Roadmap](#-roadmap)
+18. [Contributing](#-contributing)
+19. [License](#-license)
+20. [Contact](#-contact)
 
 ---
 
 ## 🌟 Overview
 
-The **e-Modus Operandi Bureau (e-MOB)** is a sophisticated web-based application designed specifically for the **Maharashtra Police - Local Crime Branch, Chhatrapati Sambhajinagar Rural**. This system digitizes and streamlines the management of accused persons, crime records, and operational workflows across multiple police stations and divisions.
+**e-MOB** replaces the manual, paper-based register historically used by the **Local Crime Branch, Chhatrapati Sambhajinagar Rural** to track accused persons across Divisions and Police Stations. It gives every station a shared, searchable, auditable database with:
 
-### Purpose
+- A **single source of truth** for accused/case records across all Divisions and Police Stations.
+- **Instant search** across name, section, crime type, and station — instead of flipping through physical registers.
+- **Statistical dashboards** for leadership to see crime trends by station and crime type at a glance.
+- **Full accountability** — every view, create, edit, and delete is written to an immutable audit log with user, IP, and timestamp.
+- **Bilingual UI** (English / Marathi) so every station can use it in the language its staff is comfortable with.
+- **One-click official reporting** — PDF exports formatted like the department's official letterhead, plus raw Excel exports for analysis.
 
-This application addresses the need for:
-- **Centralized Database**: Unified storage of accused persons across all police stations
-- **Quick Access**: Rapid search and retrieval of criminal records
-- **Data Analysis**: Statistical insights on crime patterns and trends
-- **Accountability**: Complete audit trail through comprehensive logging
-- **Multilingual Support**: Interface available in English and Marathi
-- **Professional Reporting**: Generate official PDFs and Excel reports
+| | |
+|---|---|
+| **Domain** | Law-enforcement records management |
+| **Architecture** | Three-tier MERN (React SPA ↔ REST API ↔ MongoDB) |
+| **Primary users** | LCB Admin (full access), Police Station users (read/search/report) |
+| **Deployment shape** | Two independently deployable apps: `Backend/` (API) and `Frontend/` (static SPA) |
 
 ---
 
-## ✨ Key Features
+## ✨ Feature Highlights
 
 ### 🔐 Authentication & Authorization
-- **Role-Based Access Control (RBAC)**
-  - Admin (LCB Admin) - Full system access
-  - Police - Limited access for viewing and reporting
-- **JWT Token-Based Authentication**
-- **Secure Password Hashing** using bcrypt
-- **Session Management** with automatic token expiration
-- **Protected Routes** on both frontend and backend
+- JWT-based login (`email` + `password` + `role`), 1-hour token expiry.
+- Passwords hashed with **bcrypt** (10 salt rounds) — never stored in plaintext.
+- `verifyToken` + `authorizeRole([...])` middleware guard every sensitive route.
+- Frontend route guard (`ProtectedRoute`) redirects unauthenticated users to `/login`; session is restored from a decoded JWT in `localStorage` on page load.
+- Live "online" presence — every authenticated request refreshes `lastActive` / `isOnline` on the user document, powering the **Live Users** admin widget.
 
-### 👥 User Management
-- **Create, Read, Update, Delete (CRUD) Operations** for users
-- **User Profile Management**
-  - First Name, Last Name
-  - Email & Phone Number
-  - Police Station Assignment
-  - Profile Photo Upload (max 500KB)
-- **Role Assignment** (Admin/Police)
-- **User Activity Tracking**
-
-### 📁 Accused Management
-- **Comprehensive Accused Records**
-  - Personal Information (Name, Photo, Address)
-  - Contact Details (Mobile, Aadhar Number)
-  - Crime Details (Type, Sub-Type, Section)
-  - Division and Police Station
-  - Date of Incident
-  - Detailed Description
-- **Photo Upload** (max 500KB with validation)
-- **Advanced Search & Filtering**
-  - By Division
-  - By Police Station
-  - By Crime Type
-  - By Sub Crime Type
-  - By Name or Section
-- **Bulk Operations**
-  - Export to PDF (Official Format)
-  - Export to Excel
-  - Pagination Support
+### 📁 Accused / Case Records
+- Full CRUD on case records: name, division, police station, crime type, sub-crime type, section, incident date, address, Aadhar, mobile, description, and photo.
+- Cascading selects: **Division → Police Station** and **Crime Type → Sub-Crime Type**.
+- Photo upload via **Multer** (disk storage, timestamp-based filenames).
+- Server-side filtering by village, name (regex, case-insensitive), and crime type.
+- Admin-only create / edit / delete; Police role has read + search + export.
 
 ### 📊 Dashboard & Analytics
-- **Real-Time Statistics**
-  - Total Accused Count
-  - Total Police Stations
-  - Total Divisions
-- **Visual Data Representation**
-  - Accused by Police Station (Tabular View)
-  - Accused by Crime Type (Tabular View)
-- **Auto-Refreshing Data**
+- Real-time counts: total cases, total police stations, total divisions.
+- Aggregation pipelines for **cases-by-police-station** and **cases-by-crime-type**.
+- Admin-only **live users** panel (anyone active in the last 5 minutes).
 
 ### 🗂️ Master Data Management
-Four comprehensive modules for managing reference data:
+Four reference-data modules that drive every dropdown in the app:
+- **Divisions** — top-level organizational units.
+- **Villages (Police Stations)** — linked to a Division via `divisionId`.
+- **Crime Types** — top-level offence categories.
+- **Sub Crime Types** — linked to a Crime Type via `crimeTypeId`.
 
-#### 1. **Divisions Management**
-- Add, Edit, Delete divisions
-- Hierarchical organization structure
+### 📝 Audit Logging
+- A `logUserAction(action)` middleware wraps `res.send` to write a `Log` document **only after a successful (2xx) response** — failed requests are never logged as successes.
+- Captures: user id, action, human-readable detail string, IP address (`x-forwarded-for` → `req.ip` → socket), user agent, timestamp.
+- 29 distinct tracked actions covering auth, cases, users, and every master-data entity.
+- Admin-only **Logs** screen: paginated, filterable by action/date/user, plus aggregated action counts, per-user activity, and daily activity trends.
 
-#### 2. **Police Stations (Villages) Management**
-- Link police stations to divisions
-- Division-based filtering
+### 🌐 Internationalization
+- `i18next` + `react-i18next` + browser language auto-detection.
+- Full **English** and **Marathi** (`en.json` / `mr.json`) translation sets.
+- Instant language switch via `LanguageSwitcher` with no reload.
 
-#### 3. **Crime Types Management**
-- Main crime categories
-- Unique crime type names
-
-#### 4. **Sub Crime Types Management**
-- Subcategories under crime types
-- Crime type association
-
-### 📝 System Logging & Auditing
-- **Comprehensive Activity Logging**
-  - Login/Logout tracking
-  - View operations
-  - Add/Edit/Delete operations
-  - All CRUD operations on cases, users, and master data
-- **Detailed Log Information**
-  - User identification
-  - Action type
-  - Timestamp
-  - IP Address
-  - User Agent (Browser/Device)
-  - Action details
-- **Log Analytics**
-  - Action counts
-  - User activity reports
-  - Daily activity trends
-- **Filtering & Searching**
-  - By action type
-  - By date range
-  - By user
-  - Pagination support
-
-### 🌐 Internationalization (i18n)
-- **Bilingual Support**
-  - English (en)
-  - Marathi (mr)
-- **Dynamic Language Switching**
-- **Complete UI Translation**
-- **Browser Language Detection**
-
-### 🎨 User Interface Features
-- **Modern, Responsive Design**
-  - Tailwind CSS styling
-  - Mobile-friendly layout
-  - Dark mode support (toggle)
-- **Rich Components**
-  - Data tables with sorting
-  - Modal dialogs
-  - Image preview
-  - Toast notifications
-  - Loading states
-  - Form validations
-- **Professional PDF Generation**
-  - Official Maharashtra Police letterhead
-  - Proper formatting for legal documents
-  - Case details and accused information
-- **Excel Export**
-  - Structured data export
-  - Filter-based exports
-
-### 📄 Document Generation
-- **PDF Reports**
-  - Official format with police department header
-  - Complete case details
-  - Accused information table
-  - Photo inclusion
-  - Professional layout
-- **Excel Exports**
-  - Filtered data export
-  - All case details
-  - Easy data analysis
-
-### 🔍 Advanced Search
-- **Multi-Criteria Filtering**
-  - Cascading dropdowns (Division → Police Station)
-  - Cascading dropdowns (Crime Type → Sub Type)
-  - Text-based search
-- **Real-Time Results**
-- **Pagination**
-  - Configurable items per page (10, 25, 50, 100)
-  - Page navigation
-  - Total records count
-
-### ✏️ In-Line Editing
-- **Quick Edit** accused records
-- **Photo Update** capability
-- **Validation** on all fields
-- **Instant Save** with feedback
+### 🎨 UI / UX
+- Tailwind CSS, dark-mode toggle persisted via a Zustand store, responsive layout with collapsible sidebar.
+- Toast notifications (`react-hot-toast`), modal dialogs, image previews, sortable tables (`@tanstack/react-table`), client-side pagination.
+- **Official PDF generation** (`jspdf` + `jspdf-autotable` + `html2pdf.js`) styled after the department's letterhead template.
+- **Excel export** (`xlsx`) of filtered result sets for offline analysis.
 
 ---
 
 ## 🛠️ Technology Stack
 
-### Frontend
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 18.3.1 | UI Framework |
-| **TypeScript** | 5.5.3 | Type Safety |
-| **Vite** | 5.4.2 | Build Tool & Dev Server |
-| **React Router DOM** | 6.29.0 | Routing |
-| **Tailwind CSS** | 3.4.1 | Styling |
-| **Zustand** | 4.5.2 | State Management |
-| **Axios** | 1.8.1 | HTTP Client |
-| **React Hot Toast** | 2.4.1 | Notifications |
-| **i18next** | 23.10.0 | Internationalization |
-| **jsPDF** | 2.5.1 | PDF Generation |
-| **jsPDF-AutoTable** | 3.8.2 | PDF Tables |
-| **XLSX** | 0.18.5 | Excel Export |
-| **html2canvas** | Latest | HTML to Image |
-| **html2pdf.js** | 0.10.3 | HTML to PDF |
-| **Lucide React** | 0.344.0 | Icons |
-| **JWT Decode** | 4.0.0 | Token Parsing |
-| **date-fns** | 3.3.1 | Date Formatting |
+### Frontend — `Frontend/` (React SPA)
 
-### Backend
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| **Node.js** | 16+ | Runtime Environment |
-| **Express** | 4.21.2 | Web Framework |
-| **MongoDB** | 8.10.1 | Database |
-| **Mongoose** | 8.10.1 | ODM |
-| **JWT** | 9.0.2 | Authentication |
-| **bcrypt** | 5.1.1 | Password Hashing |
-| **Multer** | 1.4.5 | File Upload |
-| **CORS** | 2.8.5 | Cross-Origin Support |
-| **dotenv** | 16.4.7 | Environment Variables |
-| **Express Validator** | 7.2.1 | Input Validation |
-| **PM2** | 6.0.5 | Process Management |
-| **Nodemon** | 3.1.9 | Development Hot Reload |
+|---|---|---|
+| **React** | 18.3.1 | UI framework |
+| **TypeScript** | 5.5.3 | Static typing |
+| **Vite** | 5.4.2 | Dev server & bundler |
+| **React Router DOM** | 6.29.0 | Client-side routing (`HashRouter`) |
+| **Tailwind CSS** | 3.4.1 | Utility-first styling |
+| **Zustand** | 4.5.2 | Lightweight global state (auth, theme) |
+| **Axios** | 1.8.1 | HTTP client |
+| **@tanstack/react-table** | 8.13.2 | Data-grid logic (sort/filter/paginate) |
+| **react-i18next / i18next** | 14.0.5 / 23.10.0 | Internationalization (English/Marathi) |
+| **jsPDF + jsPDF-AutoTable** | 2.5.1 / 3.8.2 | Official PDF report generation |
+| **html2pdf.js** | 0.10.3 | HTML → PDF conversion |
+| **xlsx** | 0.18.5 | Excel export |
+| **react-hot-toast** | 2.4.1 | Toast notifications |
+| **jwt-decode** | 4.0.0 | Client-side JWT parsing / expiry check |
+| **date-fns** | 3.3.1 | Date formatting |
+| **lucide-react** | 0.344.0 | Icon set |
+| **clsx / tailwind-merge** | 2.1.0 / 2.2.1 | Conditional/merged class names |
 
-### Development Tools
-- **ESLint** - Code Linting
-- **PostCSS** - CSS Processing
-- **Autoprefixer** - CSS Vendor Prefixes
-- **TypeScript ESLint** - TypeScript Linting
+### Backend — `Backend/` (REST API)
+
+| Technology | Version | Purpose |
+|---|---|---|
+| **Node.js** | 16+ | Runtime |
+| **Express** | 4.21.2 | HTTP framework & routing |
+| **MongoDB** | — | Primary datastore |
+| **Mongoose** | 8.10.1 | Schema modeling / ODM |
+| **jsonwebtoken** | 9.0.2 | JWT issuing & verification |
+| **bcrypt** | 5.1.1 | Password hashing |
+| **multer** | 1.4.5-lts.1 | Multipart photo uploads |
+| **express-validator** | 7.2.1 | Request input validation |
+| **cors** | 2.8.5 | Cross-origin access control |
+| **dotenv** | 16.4.7 | Environment variable loading |
+| **pm2** | 6.0.5 | Production process management |
+| **nodemon** (dev) | 3.1.9 | Hot-reload during development |
+
+### Tooling
+- **ESLint 9** + `typescript-eslint` + `eslint-plugin-react-hooks` — linting.
+- **PostCSS** + **Autoprefixer** — CSS pipeline for Tailwind.
+- **Git** — version control (this repository).
 
 ---
 
 ## 🏗️ System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CLIENT LAYER                          │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │           React Frontend (MOB-main)                   │   │
-│  │  • TypeScript + Vite                                 │   │
-│  │  • Tailwind CSS Styling                              │   │
-│  │  • Zustand State Management                          │   │
-│  │  • React Router Navigation                           │   │
-│  │  • i18next Internationalization                      │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                            ↕ HTTP/HTTPS (Axios)
-┌─────────────────────────────────────────────────────────────┐
-│                      APPLICATION LAYER                       │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │         Node.js Express Backend (MOB-Back-main)      │   │
-│  │                                                      │   │
-│  │  ┌──────────────┐  ┌───────────────┐  ┌──────────┐ │   │
-│  │  │ Controllers  │  │  Middleware   │  │  Routes  │ │   │
-│  │  │              │  │               │  │          │ │   │
-│  │  │ • Auth       │  │ • JWT Verify  │  │ • Auth   │ │   │
-│  │  │ • Case       │  │ • Role Check  │  │ • Cases  │ │   │
-│  │  │ • User       │  │ • Multer      │  │ • Users  │ │   │
-│  │  │ • Dashboard  │  │ • Logger      │  │ • Master │ │   │
-│  │  └──────────────┘  └───────────────┘  └──────────┘ │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                            ↕ Mongoose ODM
-┌─────────────────────────────────────────────────────────────┐
-│                       DATABASE LAYER                         │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │                  MongoDB Database                     │   │
-│  │                                                      │   │
-│  │  Collections:                                        │   │
-│  │  • users         • cases         • divisions        │   │
-│  │  • crimetypes    • subcrimetypes • villages         │   │
-│  │  • logs                                             │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+e-MOB is a classic **three-tier** application: a React single-page app talks to a stateless Express REST API over HTTPS/JSON, and the API is the only thing that talks to MongoDB.
+
+```mermaid
+flowchart TB
+    subgraph Client["🖥️ CLIENT LAYER — Frontend/ (React + TS + Vite)"]
+        UI["Pages: Login · Dashboard · Search · CaseForm<br/>MasterData · UserManagement · Profile · Settings · Logs"]
+        Store["Zustand Stores<br/>(auth.ts, theme.ts)"]
+        I18N["i18next<br/>(en / mr)"]
+        HTTP["Axios HTTP Client<br/>+ JWT in Authorization header"]
+        UI --> Store
+        UI --> I18N
+        UI --> HTTP
+    end
+
+    subgraph API["⚙️ APPLICATION LAYER — Backend/ (Node.js + Express)"]
+        Routes["Routes<br/>auth · cases · users · dashboard<br/>divisions · villages · crime-types<br/>sub-crime-types · logs"]
+        MW["Middleware<br/>verifyToken · authorizeRole<br/>logUserAction · multer upload"]
+        Ctrl["Controllers<br/>business logic per domain"]
+        Routes --> MW --> Ctrl
+    end
+
+    subgraph DB["🗄️ DATA LAYER — MongoDB"]
+        Coll["Collections:<br/>users · cases · divisions · villages<br/>crimetypes · subcrimetypes · logs"]
+        FS["Local filesystem<br/>Backend/uploads/*.jpg (photos)"]
+    end
+
+    HTTP -->|"HTTPS / JSON<br/>REST calls"| Routes
+    Ctrl -->|"Mongoose ODM"| Coll
+    MW -->|"multer.diskStorage"| FS
+    Ctrl -.->|"static file serve<br/>/uploads"| FS
+
+    classDef client fill:#1e3a8a,color:#fff,stroke:#60a5fa;
+    classDef api fill:#065f46,color:#fff,stroke:#34d399;
+    classDef db fill:#78350f,color:#fff,stroke:#fbbf24;
+    class Client client
+    class API api
+    class DB db
 ```
 
-### Request Flow
-1. **User Interaction** → React Component
-2. **State Update** → Zustand Store (if needed)
-3. **API Call** → Axios HTTP Request with JWT Token
-4. **Backend Processing**:
-   - Route Handler
-   - Middleware (Auth, Logging, File Upload)
-   - Controller Logic
-   - Database Operations (Mongoose)
-5. **Response** → JSON Data
-6. **UI Update** → React Re-render
-7. **User Feedback** → Toast Notification
+### Backend layering (routes → middleware → controller → model)
+
+Every protected route in `Backend/routes/*.js` is composed as a middleware chain before it ever reaches business logic:
+
+```mermaid
+flowchart LR
+    A["Incoming Request"] --> B["verifyToken<br/>(validates JWT, refreshes lastActive/isOnline)"]
+    B --> C["authorizeRole([...])<br/>(checks req.user.role)"]
+    C --> D{"File upload<br/>needed?"}
+    D -->|yes| E["multer.single('photo')"]
+    D -->|no| F["logUserAction('action')<br/>(wraps res.send, logs on 2xx)"]
+    E --> F
+    F --> G["Controller<br/>(Mongoose query/mutation)"]
+    G --> H["JSON Response"]
+```
+
+---
+
+## 📂 Repository Structure
+
+```
+MOB-Application/
+├── Backend/                       # Express REST API
+│   ├── controllers/               # Business logic (one file per domain)
+│   │   ├── authController.js      # login / logout
+│   │   ├── caseController.js      # accused/case CRUD
+│   │   ├── userController.js      # user CRUD + profile
+│   │   ├── dashboardController.js # stats + live users
+│   │   ├── divisionController.js
+│   │   ├── villageController.js
+│   │   ├── crimeTypeController.js
+│   │   ├── subCrimeTypeController.js
+│   │   └── logController.js       # audit log CRUD + stats
+│   ├── middleware/
+│   │   ├── auth.js                # verifyToken, authorizeRole
+│   │   ├── logMiddleware.js       # logUserAction (audit trail)
+│   │   └── uploadMiddleware.js    # multer disk storage config
+│   ├── models/                    # Mongoose schemas
+│   │   ├── User.js · Case.js · Division.js
+│   │   ├── Village.js · CrimeType.js · SubCrimeType.js
+│   │   └── Log.js
+│   ├── routes/                    # Express routers, one per resource
+│   ├── uploads/                   # Uploaded accused/user photos (disk storage)
+│   ├── createAdmin.js             # One-off script: seeds a first admin user
+│   ├── seed.js                    # Database seed script
+│   ├── server.js                  # App entry point — Express app + route mounting
+│   └── package.json
+│
+├── Frontend/                      # React + TypeScript SPA
+│   ├── src/
+│   │   ├── pages/                 # Login, Dashboard, Search, CaseForm,
+│   │   │                          # MasterData, UserManagement, Profile, Settings, Logs
+│   │   ├── components/            # Header, Sidebar, Layout, LanguageSwitcher
+│   │   ├── store/                 # Zustand stores: auth.ts, theme.ts
+│   │   ├── i18n/                  # i18next config + locales/{en,mr}.json
+│   │   ├── lib/                   # Shared utilities (clsx/tailwind-merge helpers)
+│   │   ├── data/                  # Sample/fixture data
+│   │   └── App.tsx                # Route definitions (HashRouter)
+│   ├── public/                    # Static assets + official report templates
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── package.json
+│
+├── mob.*.json                     # MongoDB collection exports (cases, users, divisions,
+│                                   # villages, crimetypes, subcrimetypes, logs) — data snapshots
+├── template.docx / .htm / .mht     # Official letterhead templates used as the basis
+│   / template_files/              # for generated PDF reports
+└── README.md
+```
+
+> **Two independent apps, one repo.** There is no root-level `package.json` or monorepo tooling (no Lerna/Nx/Turborepo/workspaces) — `Backend/` and `Frontend/` are installed, run, and deployed separately.
+
+---
+
+## 🔄 Core Workflows
+
+### 1. Login & Session Flow
+
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant FE as React App (Login.tsx)
+    participant Store as auth.ts (Zustand)
+    participant API as POST /api/auth/login
+    participant MW as verifyToken (future requests)
+    participant DB as MongoDB
+
+    U->>FE: Enter email, password, role
+    FE->>Store: login(email, password, role)
+    Store->>API: axios.post({ email, password, role })
+    API->>DB: User.findOne({ email, role })
+    DB-->>API: user document
+    API->>API: bcrypt.compare(password, user.password)
+    API->>DB: findByIdAndUpdate(isOnline:true, lastActive:now)
+    API->>DB: Log.save({ action: "login", ip, userAgent })
+    API-->>Store: { token (JWT, 1h), username, role }
+    Store->>Store: localStorage.setItem(token/role/username)
+    Store-->>FE: isAuthenticated = true
+    FE->>FE: <ProtectedRoute> renders <Layout>/<Dashboard>
+    Note over FE,MW: Every subsequent request sends<br/>Authorization: Bearer <token>
+```
+
+### 2. Creating a New Accused Record (Admin only)
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    participant FE as CaseForm.tsx
+    participant API as POST /api/cases
+    participant Auth as verifyToken + authorizeRole(['admin'])
+    participant Upload as multer.single('photo')
+    participant Log as logUserAction('add_case')
+    participant Ctrl as caseController.addCase
+    participant DB as MongoDB (cases)
+
+    Admin->>FE: Fill form (name, division, village, crimeType,<br/>subType, section, description, date, address, photo)
+    FE->>API: multipart/form-data + Bearer token
+    API->>Auth: verify JWT & role === 'admin'
+    Auth->>Upload: parse multipart body, store photo in /uploads
+    Upload->>Ctrl: req.body + req.file
+    Ctrl->>DB: new Case({...}).save()
+    DB-->>Ctrl: saved case document
+    Ctrl-->>Log: res.send(case) → intercepted
+    Log->>DB: Log.save({ action: "add_case", details, ip, userAgent })
+    Ctrl-->>FE: 201 Created + case JSON
+    FE->>FE: toast.success() + refresh list
+```
+
+### 3. Search → Export Workflow
+
+```mermaid
+flowchart LR
+    A["Search.tsx:<br/>select Division → Village<br/>select Crime Type → Sub Type<br/>type name/section"] --> B["GET /api/cases?village=&name=&theftType="]
+    B --> C["caseController.getCases<br/>(regex + exact-match filters)"]
+    C --> D["Results table<br/>(@tanstack/react-table, paginated)"]
+    D --> E{"Export?"}
+    E -->|PDF| F["jsPDF + jspdf-autotable<br/>→ official letterhead report"]
+    E -->|Excel| G["xlsx → .xlsx download"]
+```
+
+### 4. Audit Logging (cross-cutting)
+
+Every mutating or sensitive `GET` route is wrapped with `logUserAction('<action>')`. The middleware monkey-patches `res.send` so the audit entry is written **after** the controller succeeds (HTTP 2xx) — a failed request never produces a false "success" log line.
+
+```mermaid
+flowchart TB
+    R["Any guarded route"] --> C["Controller runs"]
+    C --> S["res.send(data) called"]
+    S --> Check{"statusCode in 200-299<br/>AND req.user present?"}
+    Check -->|yes| W["Log.save({ userId, action, details,<br/>ipAddress, userAgent, timestamp })"]
+    Check -->|no| Skip["No log written"]
+    W --> Out["Original response sent to client"]
+    Skip --> Out
+```
+
+---
+
+## 🧬 Data Model / ER Diagram
+
+```mermaid
+erDiagram
+    USER {
+        ObjectId _id
+        string firstName
+        string lastName
+        string email "unique"
+        string phone
+        string policeStation
+        string password "bcrypt hash"
+        string role "admin | police"
+        string photo
+        Date lastActive
+        boolean isOnline
+    }
+
+    CASE {
+        ObjectId _id
+        string name
+        string division "plain string, not FK"
+        string village "plain string, not FK"
+        string crimeType "plain string, not FK"
+        string subType "plain string, not FK"
+        string section
+        string description
+        Date date
+        string address
+        string aadhar
+        string mobile
+        string photo
+        Date createdAt
+    }
+
+    DIVISION {
+        ObjectId _id
+        string name "unique"
+    }
+
+    VILLAGE {
+        ObjectId _id
+        string name
+        ObjectId divisionId "FK -> Division"
+    }
+
+    CRIMETYPE {
+        ObjectId _id
+        string name "unique"
+    }
+
+    SUBCRIMETYPE {
+        ObjectId _id
+        string name
+        ObjectId crimeTypeId "FK -> CrimeType"
+    }
+
+    LOG {
+        ObjectId _id
+        ObjectId userId "FK -> User"
+        string action "one of 29 enum values"
+        string details
+        string ipAddress
+        string userAgent
+        Date timestamp
+    }
+
+    DIVISION ||--o{ VILLAGE : "has many"
+    CRIMETYPE ||--o{ SUBCRIMETYPE : "has many"
+    USER ||--o{ LOG : "performs"
+    DIVISION ..o{ CASE : "selected by name (not referenced)"
+    VILLAGE  ..o{ CASE : "selected by name (not referenced)"
+    CRIMETYPE ..o{ CASE : "selected by name (not referenced)"
+    SUBCRIMETYPE ..o{ CASE : "selected by name (not referenced)"
+```
+
+---
+
+## 👤 Role-Based Access Control
+
+| Capability | Admin (LCB Admin) | Police (Station User) |
+|---|:---:|:---:|
+| View / search cases | ✅ | ✅ |
+| Export PDF / Excel | ✅ | ✅ |
+| Add / edit / delete cases | ✅ | ❌ |
+| View dashboard stats | ✅ | ✅ |
+| View live users widget | ✅ | ❌ |
+| Manage users (CRUD) | ✅ | ❌ |
+| Manage master data (divisions/villages/crime types/sub-types) | ✅ | ❌ |
+| View audit logs & log statistics | ✅ | ❌ |
+| Manage own profile / password / photo | ✅ | ✅ |
+
+Enforced server-side via `authorizeRole(['admin'])` / `authorizeRole(['admin','police'])` on every route, and mirrored client-side by conditionally rendering admin-only UI.
 
 ---
 
@@ -319,1002 +461,277 @@ Four comprehensive modules for managing reference data:
 
 ### Prerequisites
 
-Ensure you have the following installed on your system:
+| Requirement | Version | Notes |
+|---|---|---|
+| [Node.js](https://nodejs.org/) | 16+ | Runtime for both apps |
+| [MongoDB](https://www.mongodb.com/try/download/community) | 5+ | Local instance or MongoDB Atlas |
+| npm | bundled with Node | Package manager used in this repo |
+| Git | any | Version control |
 
-- **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
-- **MongoDB** (v5 or higher) - [Download](https://www.mongodb.com/try/download/community)
-- **Git** - [Download](https://git-scm.com/)
-- **npm** or **yarn** package manager
+### 1. Clone & install
 
-### Backend Installation
-
-1. **Navigate to Backend Directory**
 ```bash
-cd MOB-Back-main
+git clone https://github.com/Shantanu-Kulkarni1229/MOB-Application.git
+cd MOB-Application
 ```
 
-2. **Install Dependencies**
+### 2. Backend setup
+
 ```bash
+cd Backend
 npm install
 ```
 
-3. **Configure Environment Variables**
-
-Create a `.env` file in the `MOB-Back-main` directory:
+Create `Backend/.env`:
 
 ```env
-# Database Configuration
 MONGO_URI=mongodb://localhost:27017/mob
-
-# Server Configuration
 PORT=5000
-
-# Security
-JWT_SECRET=YourSuperSecretJWTKeyChangeThis123!
-
-# Optional: Production MongoDB URI
-# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/mob?retryWrites=true&w=majority
+JWT_SECRET=change-this-to-a-long-random-string
 ```
 
-4. **Start MongoDB Service**
+Run it:
 
-**Windows:**
 ```bash
-net start MongoDB
-```
-
-**Linux/Mac:**
-```bash
-sudo systemctl start mongod
+npm run dev      # nodemon, hot reload (development)
 # or
-mongod --dbpath /path/to/your/db
+npm start        # node server.js (production-style)
 ```
 
-5. **Run the Backend Server**
+Verify: `GET http://localhost:5000/` → `"API is running..."`
 
-**Development Mode (with auto-reload):**
+### 3. Seed the first admin user
+
+The repo ships two helper scripts — **edit them first to use your own email/password**, then run once:
+
 ```bash
-npm run server
+node createAdmin.js   # creates a single admin user directly via the User model
+# or
+npm run seed          # runs seed.js
 ```
 
-**Production Mode:**
+> ⚠️ Never commit real credentials to `createAdmin.js` / `seed.js`. Treat them as local-only bootstrap scripts.
+
+### 4. Frontend setup
+
 ```bash
-npm start
-```
-
-The backend server will start on `http://localhost:5000`
-
-6. **Verify Backend is Running**
-```bash
-# Test the API
-curl http://localhost:5000/
-# Expected Response: "API is running..."
-```
-
----
-
-### Frontend Installation
-
-1. **Navigate to Frontend Directory**
-```bash
-cd MOB-main
-```
-
-2. **Install Dependencies**
-```bash
+cd Frontend
 npm install
 ```
 
-3. **Configure Environment Variables**
-
-Create a `.env` file in the `MOB-main` directory:
+Create `Frontend/.env`:
 
 ```env
-# Backend API URL
 VITE_BACKEND_URL=http://localhost:5000
 ```
 
-**For Production:**
-```env
-VITE_BACKEND_URL=https://your-production-domain.com
-```
+Run it:
 
-4. **Run the Frontend Development Server**
 ```bash
-npm run dev
+npm run dev        # Vite dev server, default http://localhost:5173
+npm run build      # production build -> Frontend/dist
+npm run preview    # preview the production build locally
+npm run lint        # ESLint
 ```
 
-The frontend will start on `http://localhost:5173` (or another available port)
+Open `http://localhost:5173`, log in with the admin account you just created, and start adding Divisions → Villages → Crime Types → Sub Crime Types (master data) before creating your first case.
 
-5. **Build for Production**
-```bash
-npm run build
-```
-
-The optimized build will be created in the `dist` directory.
-
-6. **Preview Production Build**
-```bash
-npm run preview
-```
+> **Routing note:** the SPA uses `HashRouter` (URLs look like `/#/dashboard`), so it can be served from any static host without server-side rewrite rules.
 
 ---
 
-## ⚙️ Configuration
+## 🔧 Environment Variables
 
-### Backend Configuration
+### Backend (`Backend/.env`)
 
-#### Environment Variables Explained
+| Variable | Required | Description |
+|---|---|---|
+| `MONGO_URI` | ✅ | MongoDB connection string (local or Atlas) |
+| `PORT` | ✅ | Port the Express server listens on (defaults to `5000`) |
+| `JWT_SECRET` | ✅ | Secret used to sign/verify JWTs — use a long random string in production |
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/mob` |
-| `PORT` | Server port number | `5000` |
-| `JWT_SECRET` | Secret key for JWT tokens (CHANGE IN PRODUCTION!) | `YourSecureRandomString123!@#` |
+### Frontend (`Frontend/.env`)
 
-#### File Upload Configuration
-
-Located in `middleware/uploadMiddleware.js`:
-- **Max File Size**: Enforced at application level (500KB recommended)
-- **Allowed File Types**: Images (JPEG, PNG, JPG)
-- **Storage**: Local file system in `uploads/` directory
-
-### Frontend Configuration
-
-#### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_BACKEND_URL` | Backend API base URL | `http://localhost:5000` |
-
-#### Build Configuration
-
-The `vite.config.ts` file contains build settings:
-- Output directory: `dist`
-- Base URL: `/`
-- Asset handling
-- Plugin configuration
+| Variable | Required | Description |
+|---|---|---|
+| `VITE_BACKEND_URL` | ✅ | Base URL of the API the SPA talks to (e.g. `http://localhost:5000`) |
 
 ---
 
-## 📖 Usage Guide
+## 📜 NPM Scripts Reference
 
-### First Time Setup
+### `Backend/package.json`
 
-1. **Start the Application**
-   - Ensure MongoDB is running
-   - Start backend server: `cd MOB-Back-main && npm run server`
-   - Start frontend server: `cd MOB-main && npm run dev`
-   - Open browser to `http://localhost:5173`
+| Script | Command | Use |
+|---|---|---|
+| `npm start` | `node server.js` | Run the API without hot-reload |
+| `npm run dev` | `nodemon server.js` | Development with auto-restart |
+| `npm run seed` | `node seed.js` | Seed/reset reference + sample data |
 
-2. **Create First Admin User**
+### `Frontend/package.json`
 
-You need to manually insert the first admin user into MongoDB:
-
-```javascript
-// Connect to MongoDB
-use mob
-
-// Create admin user (password: admin123 - CHANGE THIS!)
-db.users.insertOne({
-  firstName: "Admin",
-  lastName: "User",
-  email: "admin@mob.gov.in",
-  phone: "9999999999",
-  policeStation: "Local Crime Branch",
-  // Password hash for "admin123" - GENERATE YOUR OWN!
-  password: "$2b$10$rKjQlH8QiL0tF.WlqPZdsuI.4OvY7Ev7K6TdOC2zM7CsGW.HvqG7G",
-  role: "admin",
-  photo: ""
-})
-```
-
-3. **Login**
-   - Email: `admin@mob.gov.in`
-   - Password: `admin123`
-   - Role: Select "LCB Admin"
-
-4. **Setup Master Data**
-   - Navigate to "Master Data"
-   - Add Divisions (e.g., "North Division", "South Division")
-   - Add Police Stations and link them to divisions
-   - Add Crime Types (e.g., "Theft", "Robbery", "Murder")
-   - Add Sub Crime Types under each crime type
-
-5. **Create Users**
-   - Navigate to "User Management"
-   - Add police station users
-   - Assign roles and police stations
-
-6. **Add Accused Records**
-   - Navigate to "New Accused"
-   - Fill in all required information
-   - Upload photo (optional, max 500KB)
-   - Submit
-
-### Daily Operations
-
-#### For Police Station Users
-1. **View Dashboard** - See overall statistics
-2. **Search Accused** - Find records by various criteria
-3. **View Details** - Check complete accused information
-4. **Export Reports** - Generate PDF or Excel reports
-5. **Update Profile** - Manage personal information
-
-#### For Admin Users
-All police operations PLUS:
-1. **Add New Accused** - Register new accused persons
-2. **Edit Accused Records** - Update existing information
-3. **Delete Records** - Remove accused entries
-4. **Manage Users** - Create, edit, delete user accounts
-5. **Manage Master Data** - Update divisions, police stations, crime types
-6. **View System Logs** - Monitor all system activities
-
-### Searching Accused
-
-1. **Navigate to "Search Accused"**
-2. **Apply Filters**:
-   - Select Division (cascades to Police Stations)
-   - Select Police Station
-   - Select Crime Type (cascades to Sub Types)
-   - Select Sub Crime Type
-   - Enter Name or Section number
-3. **View Results** in table format
-4. **Actions**:
-   - Click "View" to see details
-   - Click "Edit" to modify (Admin only)
-   - Click "Delete" to remove (Admin only)
-5. **Export**:
-   - Click "Export PDF" for official document
-   - Click "Export Excel" for data analysis
-
-### Generating Reports
-
-#### PDF Export
-- Automatically formats data in official Maharashtra Police template
-- Includes:
-  - Department header
-  - Reference number
-  - Addressee information
-  - Case details
-  - Accused list with photos
-  - Official footer
-- Suitable for official correspondence
-
-#### Excel Export
-- Exports all filtered records
-- Columns include all accused information
-- Suitable for data analysis and record keeping
+| Script | Command | Use |
+|---|---|---|
+| `npm run dev` | `vite` | Local dev server with HMR |
+| `npm run build` | `vite build` | Production build to `dist/` |
+| `npm run preview` | `vite preview` | Serve the production build locally |
+| `npm run lint` | `eslint .` | Lint the codebase |
 
 ---
 
-## 📡 API Documentation
+## 📡 API Reference
 
-### Base URL
-```
-http://localhost:5000/api
-```
+Base URL: `http://localhost:5000/api` · All protected routes require `Authorization: Bearer <token>`.
 
-### Authentication Endpoints
+### Auth — `/api/auth`
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/login` | Public | Body: `{ email, password, role }` → `{ token, username, role }` |
+| `POST` | `/logout` | Authenticated | Marks user offline, writes a `logout` audit entry |
 
-#### Login
-```http
-POST /auth/login
-Content-Type: application/json
+### Cases — `/api/cases`
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/` | admin, police | Query: `village`, `name` (regex), `theftType` |
+| `POST` | `/` | admin | `multipart/form-data` incl. `photo`; creates a case |
+| `PUT` | `/:id` | admin | Update a case; `photo` optional |
+| `DELETE` | `/:id` | admin | Delete a case |
 
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "role": "police"
-}
+### Users — `/api/users`
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/profile` | Authenticated | Current user's profile |
+| `PUT` | `/profile` | Authenticated | Update current user's profile |
+| `GET` | `/` | admin | List all users |
+| `POST` | `/` | admin | Create a user (`multipart/form-data`, optional `photo`) |
+| `PUT` | `/:id` | admin | Update a user |
+| `DELETE` | `/:id` | admin | Delete a user |
 
-Response:
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "_id": "60d5ec49f1b2c8b8f8e8e8e8",
-    "firstName": "John",
-    "lastName": "Doe",
-    "email": "user@example.com",
-    "role": "police",
-    "policeStation": "Station Name"
-  }
-}
-```
+### Dashboard — `/api/dashboard`
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/stats` | admin, police | `{ totalCases, casesByVillage[], casesByTheftType[], totalPoliceStation, totalDivisions }` |
+| `GET` | `/live-users` | admin | Users active in the last 5 minutes |
 
-#### Logout
-```http
-POST /auth/logout
-Authorization: Bearer {token}
+### Master data — Divisions, Villages, Crime Types, Sub-Crime Types
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/divisions` | admin, police | List divisions |
+| `POST` / `PUT /:id` / `DELETE /:id` | `/api/divisions` | admin | Manage divisions |
+| `GET` | `/api/villages` | admin, police | List villages |
+| `GET` | `/api/villages/by-division/:divisionId` | admin, police | Villages for a division |
+| `POST` / `PUT /:id` / `DELETE /:id` | `/api/villages` | admin | Manage villages |
+| `GET` | `/api/crime-types` | admin, police | List crime types |
+| `POST` / `PUT /:id` / `DELETE /:id` | `/api/crime-types` | admin | Manage crime types |
+| `GET` | `/api/sub-crime-types` | admin, police | List sub-crime types |
+| `GET` | `/api/sub-crime-types/by-crime-type/:crimeTypeId` | admin, police | Sub-types for a crime type |
+| `POST` / `PUT /:id` / `DELETE /:id` | `/api/sub-crime-types` | admin | Manage sub-crime types |
 
-Response:
-{
-  "message": "Logged out successfully"
-}
-```
+### Logs — `/api/logs`
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/` | admin | Paginated logs, filterable by action/date/user |
+| `GET` | `/stats` | admin | Action counts, top-user activity, daily activity trend |
+| `POST` | `/` | Authenticated | Manually create a log entry |
+| `DELETE` | `/` | admin | Purge logs older than a given date |
 
----
+### Static files
+`GET /uploads/:filename` — serves uploaded photos directly (`express.static("uploads")`).
 
-### Case Endpoints
-
-#### Get All Cases
-```http
-GET /cases
-Authorization: Bearer {token}
-
-Response: Array of case objects
-```
-
-#### Get Single Case
-```http
-GET /cases/:id
-Authorization: Bearer {token}
-
-Response: Case object
-```
-
-#### Create New Case (Admin Only)
-```http
-POST /cases
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-
-Form Data:
-- name: string (required)
-- division: ObjectId (required)
-- village: ObjectId (required)
-- crimeType: ObjectId (required)
-- subType: ObjectId (required)
-- section: string (required)
-- description: string (required)
-- date: date (required)
-- address: string (required)
-- aadhar: string
-- mobile: string
-- photo: file (max 500KB)
-
-Response:
-{
-  "_id": "60d5ec49f1b2c8b8f8e8e8e8",
-  "name": "Accused Name",
-  ...
-}
-```
-
-#### Update Case (Admin Only)
-```http
-PUT /cases/:id
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-
-Form Data: Same as Create
-
-Response: Updated case object
-```
-
-#### Delete Case (Admin Only)
-```http
-DELETE /cases/:id
-Authorization: Bearer {token}
-
-Response:
-{
-  "message": "Case deleted successfully"
-}
-```
-
----
-
-### User Management Endpoints
-
-#### Get All Users (Admin Only)
-```http
-GET /users
-Authorization: Bearer {token}
-
-Response: Array of user objects
-```
-
-#### Create User (Admin Only)
-```http
-POST /users
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-
-Form Data:
-- firstName: string (required)
-- lastName: string (required)
-- email: string (required, unique)
-- phone: string (required)
-- policeStation: string (required)
-- password: string (required)
-- role: enum ['admin', 'police'] (required)
-- photo: file
-
-Response: Created user object
-```
-
-#### Update User (Admin Only)
-```http
-PUT /users/:id
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-
-Response: Updated user object
-```
-
-#### Delete User (Admin Only)
-```http
-DELETE /users/:id
-Authorization: Bearer {token}
-
-Response:
-{
-  "message": "User deleted successfully"
-}
-```
-
----
-
-### Dashboard Endpoints
-
-#### Get Statistics
-```http
-GET /dashboard/stats
-Authorization: Bearer {token}
-
-Response:
-{
-  "totalCases": 1250,
-  "totalPoliceStation": 23,
-  "totalDivisions": 16,
-  "casesByVillage": [
-    { "_id": "villageId1", "count": 45 },
-    { "_id": "villageId2", "count": 32 }
-  ],
-  "casesByTheftType": [
-    { "_id": "crimeTypeId1", "count": 120 },
-    { "_id": "crimeTypeId2", "count": 85 }
-  ]
-}
-```
-
----
-
-### Master Data Endpoints
-
-#### Divisions
-```http
-GET    /divisions              # Get all divisions
-POST   /divisions              # Create division (Admin)
-PUT    /divisions/:id          # Update division (Admin)
-DELETE /divisions/:id          # Delete division (Admin)
-```
-
-#### Villages (Police Stations)
-```http
-GET    /villages               # Get all villages
-GET    /villages?divisionId=:id  # Get by division
-POST   /villages               # Create village (Admin)
-PUT    /villages/:id           # Update village (Admin)
-DELETE /villages/:id           # Delete village (Admin)
-```
-
-#### Crime Types
-```http
-GET    /crime-types            # Get all crime types
-POST   /crime-types            # Create crime type (Admin)
-PUT    /crime-types/:id        # Update crime type (Admin)
-DELETE /crime-types/:id        # Delete crime type (Admin)
-```
-
-#### Sub Crime Types
-```http
-GET    /sub-crime-types        # Get all sub crime types
-GET    /sub-crime-types?crimeTypeId=:id  # Get by crime type
-POST   /sub-crime-types        # Create sub crime type (Admin)
-PUT    /sub-crime-types/:id    # Update sub crime type (Admin)
-DELETE /sub-crime-types/:id    # Delete sub crime type (Admin)
-```
-
----
-
-### Logs Endpoints
-
-#### Get Logs
-```http
-GET /logs?page=1&limit=20&action=login&startDate=2025-01-01&endDate=2025-01-31
-Authorization: Bearer {token}
-
-Response:
-{
-  "logs": [
-    {
-      "_id": "60d5ec49f1b2c8b8f8e8e8e8",
-      "userId": {
-        "_id": "userId",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john@example.com",
-        "role": "police"
-      },
-      "action": "add_case",
-      "details": "Added new case for Accused Name",
-      "ipAddress": "192.168.1.1",
-      "userAgent": "Mozilla/5.0...",
-      "timestamp": "2025-01-04T10:30:00.000Z"
-    }
-  ],
-  "totalPages": 5,
-  "currentPage": 1,
-  "totalLogs": 98
-}
-```
-
-#### Get Log Statistics
-```http
-GET /logs/stats
-Authorization: Bearer {token}
-
-Response:
-{
-  "actionCounts": [
-    { "_id": "add_case", "count": 45 },
-    { "_id": "edit_case", "count": 23 }
-  ],
-  "topUserActivity": [
-    {
-      "userId": "userId",
-      "count": 67,
-      "user": "John Doe",
-      "email": "john@example.com"
-    }
-  ],
-  "dailyActivity": [
-    { "_id": "2025-01-01", "count": 15 },
-    { "_id": "2025-01-02", "count": 22 }
-  ]
-}
-```
-
----
-
-### Error Responses
-
-All endpoints may return the following error responses:
-
+### Error shape
 ```json
-{
-  "message": "Error description",
-  "error": "Detailed error (in development only)"
-}
+{ "message": "Error description", "error": "Detailed error (dev only)" }
 ```
-
-**Status Codes:**
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request
-- `401` - Unauthorized (No token or invalid token)
-- `403` - Forbidden (Insufficient permissions)
-- `404` - Not Found
-- `500` - Internal Server Error
+| Code | Meaning |
+|---|---|
+| `200/201` | Success / Created |
+| `400` | Bad request |
+| `401` | Missing/invalid token |
+| `403` | Authenticated but not authorized for this role |
+| `404` | Not found |
+| `500` | Server error |
 
 ---
 
-## 👤 User Roles & Permissions
+## 🌐 Internationalization
 
-### Admin (LCB Admin)
-**Full System Access**
-
-✅ **Cases**
-- View all cases
-- Add new cases
-- Edit existing cases
-- Delete cases
-- Export to PDF/Excel
-
-✅ **Users**
-- View all users
-- Create new users
-- Edit user details
-- Delete users
-- Assign roles
-
-✅ **Master Data**
-- Manage divisions
-- Manage police stations
-- Manage crime types
-- Manage sub crime types
-
-✅ **Logs**
-- View all system logs
-- Filter and search logs
-- View log statistics
-
-✅ **Dashboard**
-- View all statistics
-- Access all analytics
-
-✅ **Profile**
-- Update personal profile
-- Change password
-- Update profile photo
+- Powered by `i18next`, `react-i18next`, and `i18next-browser-languagedetector`.
+- Translation files: `Frontend/src/i18n/locales/en.json` and `mr.json`.
+- Language auto-detected from the browser, switchable at runtime via the `LanguageSwitcher` component — no page reload required.
 
 ---
 
-### Police (Police Station User)
-**Limited Access**
+## 🔒 Security Model
 
-✅ **Cases**
-- View all cases
-- Search and filter
-- Export to PDF/Excel
+- **Passwords** — hashed with bcrypt (cost factor 10) in a Mongoose `pre('save')` hook; raw passwords are never persisted.
+- **Authentication** — stateless JWTs (1h expiry), verified on every protected request by `verifyToken`.
+- **Authorization** — `authorizeRole([...])` enforces per-route role checks (admin vs. police) on the server — the real trust boundary; frontend route guards are UX, not security.
+- **File uploads** — handled by Multer with disk storage and timestamp-based filenames to avoid collisions/overwrites.
+- **CORS** — enabled via the `cors` middleware for cross-origin API access.
+- **Audit trail** — every sensitive action is logged with actor, IP, user agent, and timestamp (see [Core Workflows → Audit Logging](#4-audit-logging-cross-cutting)).
+- **Secrets** — `MONGO_URI` / `JWT_SECRET` live in `.env` files (gitignored), never hardcoded in source.
 
-❌ **Cannot:**
-- Add new cases
-- Edit cases
-- Delete cases
-
-✅ **Dashboard**
-- View statistics
-- View analytics
-
-✅ **Profile**
-- Update personal profile
-- Change password
-- Update profile photo
-
-❌ **Cannot Access:**
-- User Management
-- Master Data Management
-- System Logs
+### Production hardening checklist
+- [ ] Rotate `JWT_SECRET` to a long, random value and keep it out of version control.
+- [ ] Remove/rotate the credentials currently hardcoded in `createAdmin.js` before deploying.
+- [ ] Serve over HTTPS; set secure cookie/CORS origins explicitly instead of the open default.
+- [ ] Add request-size and file-type limits to `uploadMiddleware.js` (currently unrestricted at the Multer layer).
+- [ ] Add rate limiting on `/api/auth/login`.
 
 ---
 
-## 💾 Database Schema
+## ⚠️ Known Limitations & Technical Notes
 
-### Users Collection
-```javascript
-{
-  _id: ObjectId,
-  firstName: String (required),
-  lastName: String (required),
-  email: String (required, unique),
-  phone: String (required),
-  policeStation: String (required),
-  password: String (required, hashed),
-  role: String (enum: ['admin', 'police'], required),
-  photo: String (filename or URL)
-}
-```
+These are observations about the current codebase worth knowing before extending it:
 
-### Cases Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String (required),
-  division: ObjectId (ref: Division, required),
-  village: ObjectId (ref: Village, required),
-  crimeType: ObjectId (ref: CrimeType, required),
-  subType: ObjectId (ref: SubCrimeType, required),
-  section: String (required),
-  description: String (required),
-  date: Date (required),
-  address: String (required),
-  aadhar: String,
-  mobile: String,
-  photo: String (filename),
-  createdAt: Date (default: Date.now)
-}
-```
-
-### Divisions Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String (required, unique)
-}
-```
-
-### Villages Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String (required),
-  divisionId: ObjectId (ref: Division, required)
-}
-```
-
-### CrimeTypes Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String (required, unique)
-}
-```
-
-### SubCrimeTypes Collection
-```javascript
-{
-  _id: ObjectId,
-  name: String (required),
-  crimeTypeId: ObjectId (ref: CrimeType, required)
-}
-```
-
-### Logs Collection
-```javascript
-{
-  _id: ObjectId,
-  userId: ObjectId (ref: User, required),
-  action: String (enum: [
-    'login', 'logout', 'view_case', 'add_case', 'edit_case',
-    'delete_case', 'view_profile', 'update_profile',
-    'view_users', 'add_user', 'edit_user', 'delete_user',
-    'view_crime_types', 'add_crime_type', 'edit_crime_type',
-    'delete_crime_type', 'view_divisions', 'add_division',
-    'edit_division', 'delete_division', 'view_villages',
-    'add_village', 'edit_village', 'delete_village',
-    'view_sub_crime_types', 'add_sub_crime_type',
-    'edit_sub_crime_type', 'delete_sub_crime_type', 'other'
-  ], required),
-  details: String,
-  ipAddress: String,
-  userAgent: String,
-  timestamp: Date (default: Date.now)
-}
-```
-
----
-
-## 🔒 Security Features
-
-### Authentication & Authorization
-- **JWT Token-Based Authentication**
-  - Tokens expire after configured time
-  - Secure token storage in localStorage
-  - Token validation on every request
-  
-- **Password Security**
-  - Passwords hashed using bcrypt (cost factor: 10)
-  - Never stored in plain text
-  - Automatic hashing on user creation/update
-
-- **Role-Based Access Control (RBAC)**
-  - Middleware checks on all protected routes
-  - Fine-grained permission system
-  - Prevents unauthorized access
-
-### API Security
-- **CORS Configuration**
-  - Controlled cross-origin access
-  - Configurable allowed origins
-
-- **Input Validation**
-  - Express-validator for all inputs
-  - Sanitization of user data
-  - Type checking
-
-- **File Upload Security**
-  - File size limits (500KB)
-  - File type validation
-  - Secure file naming (timestamp-based)
-  - Stored outside web root (optional)
-
-### Frontend Security
-- **Protected Routes**
-  - Authentication checks before rendering
-  - Automatic redirect to login
-  
-- **XSS Prevention**
-  - React's built-in XSS protection
-  - No dangerouslySetInnerHTML usage
-  
-- **CSRF Protection**
-  - Token-based requests
-  - SameSite cookie attributes (if implemented)
-
-### Database Security
-- **MongoDB Security**
-  - Connection string in environment variables
-  - Mongoose schema validation
-  - Input sanitization
-
-### Logging & Monitoring
-- **Comprehensive Audit Trail**
-  - All actions logged
-  - IP address tracking
-  - User agent tracking
-  - Timestamp on all operations
-
-### Best Practices
-✅ Environment variables for sensitive data  
-✅ HTTPS recommended for production  
-✅ Regular security updates  
-✅ Strong JWT secret (minimum 32 characters)  
-✅ Password complexity requirements (implement as needed)  
-✅ Account lockout after failed attempts (implement as needed)  
-✅ Session timeout configuration  
-✅ Regular database backups  
-
----
-
-## 📸 Screenshots
-
-### Login Page
-<div align="center">
-Modern and secure authentication interface with role selection.
-</div>
-
-### Dashboard
-<div align="center">
-Real-time statistics and analytics at a glance.
-</div>
-
-### Search Accused
-<div align="center">
-Powerful search with multiple filters and export options.
-</div>
-
-### Add New Accused
-<div align="center">
-Comprehensive form with photo upload and validation.
-</div>
-
-### User Management
-<div align="center">
-Complete user administration interface.
-</div>
-
-### Master Data Management
-<div align="center">
-Organized tabs for managing divisions, police stations, crime types.
-</div>
-
-### System Logs
-<div align="center">
-Detailed activity tracking with filtering and analytics.
-</div>
+- **`Case` references are denormalized strings, not foreign keys.** `division`, `village`, `crimeType`, and `subType` on a `Case` are plain `String` fields (the selected label/id as sent by the frontend), *not* Mongoose `ObjectId` refs — unlike `Village.divisionId` and `SubCrimeType.crimeTypeId`, which are real refs. Renaming a Division/Village/CrimeType will **not** retroactively update existing case records.
+- **`createAdmin.js` and `seed.js` contain bootstrap credentials in source.** Treat these as local-only scripts; change the email/password before running against any shared or production database.
+- **File upload has no size/type enforcement at the Multer layer** (`Backend/middleware/uploadMiddleware.js`) — the "500KB, images only" rule mentioned in the UI is a client-side convention, not a server-side guarantee.
+- **Root-level stray files** — `mob.*.json` are MongoDB collection export dumps, and the root `template.docx/.htm/.mht` + `template_files/` mirror the official letterhead template also present in `Frontend/public/`. These aren't part of either app's build and can be treated as reference/data snapshots rather than source.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Backend Issues
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `MongoServerError: connect ECONNREFUSED` | MongoDB not running / wrong `MONGO_URI` | Start MongoDB locally, or verify your Atlas URI/IP allowlist |
+| `EADDRINUSE: address already in use :::5000` | Port already bound | Change `PORT` in `.env`, or kill the process holding it |
+| `403 Invalid token` right after login | `JWT_SECRET` changed or token expired (1h) | Log out, clear `localStorage`, log back in |
+| Frontend requests fail / CORS errors | `VITE_BACKEND_URL` wrong, backend not running | Check `.env`, confirm backend is up on the expected port |
+| Uploaded photos return `404` | `uploads/` missing or static route not mounted | Confirm `app.use("/uploads", express.static("uploads"))` in `server.js` and that the file exists |
+| `vite build` fails to resolve an import | Stale `node_modules` | `rm -rf node_modules package-lock.json && npm install` |
 
-#### MongoDB Connection Failed
-```
-Error: MongoServerError: connect ECONNREFUSED
-```
-**Solution:**
-1. Ensure MongoDB service is running
-2. Check MONGO_URI in .env file
-3. Verify MongoDB is installed correctly
-4. Check firewall settings
+---
 
-#### Port Already in Use
-```
-Error: listen EADDRINUSE: address already in use :::5000
-```
-**Solution:**
-1. Change PORT in .env file
-2. Or kill process using port 5000:
-```bash
-# Windows
-netstat -ano | findstr :5000
-taskkill /PID <PID> /F
+## 🗺️ Roadmap
 
-# Linux/Mac
-lsof -i :5000
-kill -9 <PID>
-```
-
-#### JWT Token Invalid
-```
-Error: Invalid token
-```
-**Solution:**
-1. Ensure JWT_SECRET matches between sessions
-2. Clear browser localStorage and login again
-3. Check token expiration time
-
-### Frontend Issues
-
-#### API Connection Failed
-```
-Error: Network Error / Failed to fetch
-```
-**Solution:**
-1. Verify VITE_BACKEND_URL in .env
-2. Ensure backend server is running
-3. Check for CORS issues
-4. Verify network connectivity
-
-#### Build Fails
-```
-Error: [vite]: Rollup failed to resolve import
-```
-**Solution:**
-1. Delete node_modules and package-lock.json
-2. Run `npm install` again
-3. Clear npm cache: `npm cache clean --force`
-
-#### Images Not Displaying
-```
-404 Error on image requests
-```
-**Solution:**
-1. Ensure uploads directory exists in backend
-2. Check file permissions
-3. Verify backend static file serving: `app.use("/uploads", express.static("uploads"))`
-4. Check image path in database
-
-### Common Issues
-
-#### File Upload Fails
-**Solution:**
-1. Check file size (must be < 500KB)
-2. Verify file type (JPEG, PNG, JPG only)
-3. Check multer configuration
-4. Ensure uploads directory has write permissions
-
-#### Dark Mode Not Working
-**Solution:**
-1. Clear browser cache
-2. Check localStorage for theme setting
-3. Verify Tailwind dark mode configuration
-
-#### Language Not Switching
-**Solution:**
-1. Check i18n configuration
-2. Verify locale files exist (en.json, mr.json)
-3. Clear browser cache
+- [ ] Replace string-based `Case` → master-data links with real `ObjectId` references
+- [ ] Server-side file-size/type validation for uploads
+- [ ] Rate limiting + account lockout on login
+- [ ] Two-factor authentication for admin accounts
+- [ ] Richer dashboard visualizations (charts, not just tables)
+- [ ] Automated test suite (currently no tests are configured)
+- [ ] CI pipeline for lint/build/test on every PR
+- [ ] Dedicated deployment guide (Docker/Nginx/PM2 reference setup)
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions to the e-MOB system! Here's how you can help:
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit with a clear message: `git commit -m "Add your feature"`
+4. Push: `git push origin feature/your-feature`
+5. Open a Pull Request describing *what* changed and *why*
 
-### Development Process
-1. **Fork the Repository**
-2. **Create a Feature Branch**
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Make Your Changes**
-4. **Commit Your Changes**
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-5. **Push to the Branch**
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-6. **Open a Pull Request**
-
-### Coding Standards
-- Follow existing code style
-- Write clear commit messages
-- Add comments for complex logic
-- Update documentation as needed
-- Test your changes thoroughly
-
-### Areas for Contribution
-- 🐛 Bug fixes
-- ✨ New features
-- 📝 Documentation improvements
-- 🌐 Additional language translations
-- 🎨 UI/UX enhancements
-- ⚡ Performance optimizations
-- 🧪 Test coverage
-- 🔒 Security improvements
+Please keep PRs focused, follow the existing code style in the file you're editing, and update this README when you change architecture, routes, or environment variables.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.
+Licensed under the **MIT License**.
 
 ```
 MIT License
@@ -1340,109 +757,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+> No separate `LICENSE` file currently exists in this repository — add one if you need the terms above to be machine-readable by tooling (GitHub's license detector, dependency scanners, etc.).
+
 ---
 
 ## 📞 Contact
 
-### Official Contact
-**Maharashtra Police - Local Crime Branch**  
-Office of Superintendent of Police  
-Chhatrapati Sambhajinagar Rural  
-T.C.K Center Road, Tilakdi, Pin-7  
-Chhatrapati Sambhajinagar  
+**Maharashtra Police — Local Crime Branch**
+Office of the Superintendent of Police, Chhatrapati Sambhajinagar Rural
+T.C.K Center Road, Tilakdi, Pin-7, Chhatrapati Sambhajinagar
 
-📞 **Phone:** 0240-2380978  
-🌐 **Website:** [https://csn.mahapolice.gov.in/](https://csn.mahapolice.gov.in/)  
+📞 0240-2380978 · 🌐 [csn.mahapolice.gov.in](https://csn.mahapolice.gov.in/)
 
-### Project Maintainers
-For technical support or inquiries about this software:
-- Create an issue in the repository
-- Contact the development team through official channels
-
----
-
-## 🙏 Acknowledgments
-
-- **Maharashtra Police** for the opportunity to digitize operations
-- **Local Crime Branch, Chhatrapati Sambhajinagar Rural** for requirements and feedback
-- All police personnel for their valuable input
-- Open source community for the amazing tools and libraries
-
----
-
-## 📚 Additional Resources
-
-### Documentation
-- [React Documentation](https://react.dev/)
-- [Express.js Documentation](https://expressjs.com/)
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/)
-
-### Tutorials
-- Node.js and Express API development
-- React and TypeScript best practices
-- MongoDB database design
-- JWT authentication implementation
-
-### Related Projects
-- Police management systems
-- Case management software
-- Government digital initiatives
-
----
-
-## 🔄 Version History
-
-### Version 1.0.0 (Current)
-- Initial release
-- Complete CRUD operations for cases
-- User management with RBAC
-- Master data management
-- Dashboard with analytics
-- Bilingual support (English/Marathi)
-- PDF and Excel export
-- Comprehensive logging system
-- Dark mode support
-
-### Planned Features (Future Versions)
-- [ ] Advanced analytics and charts
-- [ ] Mobile application
-- [ ] SMS notifications
-- [ ] Email integration
-- [ ] Fingerprint integration
-- [ ] Face recognition
-- [ ] API rate limiting
-- [ ] Two-factor authentication
-- [ ] Backup automation
-- [ ] Cloud deployment guide
+**Maintainer:** [Shantanu-Kulkarni1229](https://github.com/Shantanu-Kulkarni1229) — open an [issue](../../issues) for bugs or feature requests.
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for Maharashtra Police**
+**Built for Maharashtra Police — Local Crime Branch, Chhatrapati Sambhajinagar Rural**
 
-Made with modern technologies for efficient law enforcement
+⭐ Star this repository if it helped you.
 
-**Star ⭐ this repository if you find it helpful!**
-
-[Report Bug](../../issues) · [Request Feature](../../issues) · [Documentation](../../wiki)
+[Report Bug](../../issues) · [Request Feature](../../issues)
 
 </div>
-
----
-
-## 📊 Project Statistics
-
-- **Lines of Code**: 15,000+
-- **Components**: 50+
-- **API Endpoints**: 30+
-- **Database Collections**: 7
-- **Supported Languages**: 2
-- **Dependencies**: 40+
-- **Development Time**: Ongoing
-- **Status**: Production Ready ✅
-
----
-
-**© 2025 Maharashtra Police - Local Crime Branch, Chhatrapati Sambhajinagar Rural. All Rights Reserved.**

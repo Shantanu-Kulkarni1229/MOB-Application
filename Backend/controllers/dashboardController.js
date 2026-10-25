@@ -1,6 +1,7 @@
 const Case = require('../models/Case');
 const Division = require('../models/Division');
 const Village = require('../models/Village');
+const User = require('../models/User');
 
 exports.getStats = async (req, res) => {
   try {
@@ -19,6 +20,31 @@ exports.getStats = async (req, res) => {
   } catch (err) {
     console.log(err);
 
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Get live users (admin only)
+exports.getLiveUsers = async (req, res) => {
+  try {
+    // Consider users active if they were online in the last 5 minutes
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    
+    const liveUsers = await User.find({
+      lastActive: { $gte: fiveMinutesAgo },
+      role: { $ne: 'admin' } // Exclude admins from the list
+    })
+    .select('firstName lastName email policeStation lastActive isOnline role')
+    .sort({ lastActive: -1 });
+
+    const totalLiveUsers = liveUsers.length;
+
+    res.json({ 
+      totalLiveUsers,
+      liveUsers 
+    });
+  } catch (err) {
+    console.error('Error fetching live users:', err);
     res.status(500).json({ error: 'Server error' });
   }
 };

@@ -10,12 +10,16 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err.message);
+    console.error("Please check:");
+    console.error("1. Your internet connection");
+    console.error("2. MongoDB Atlas cluster is running");
+    console.error("3. Your IP is whitelisted in MongoDB Atlas");
+    console.error("4. The connection string in .env is correct");
+  });
 
 // Basic route for testing
 app.get("/", (req, res) => {

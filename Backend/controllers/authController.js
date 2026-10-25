@@ -14,6 +14,12 @@ exports.login = async (req, res) => {
     
     if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
 
+    // Update user online status
+    await User.findByIdAndUpdate(user._id, {
+      isOnline: true,
+      lastActive: new Date()
+    });
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -41,6 +47,12 @@ exports.logout = async (req, res) => {
   try {
     // Log the logout action
     if (req.user) {
+      // Update user online status
+      await User.findByIdAndUpdate(req.user.id, {
+        isOnline: false,
+        lastActive: new Date()
+      });
+
       const log = new Log({
         userId: req.user.id,
         action: 'logout',

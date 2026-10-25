@@ -44,6 +44,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['admin', 'police'], required: true },
   photo: { type: String }, // Stores the filename or URL
+  lastActive: { type: Date, default: Date.now },
+  isOnline: { type: Boolean, default: false }
 });
 
 // Hash password before saving

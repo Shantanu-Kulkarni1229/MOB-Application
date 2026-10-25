@@ -9,4 +9,9 @@ router.get('/stats',
     authorizeRole(['admin','police']),
     dashboardController.getStats);
 
+router.get('/live-users',
+    verifyToken,
+    authorizeRole(['admin']),
+    dashboardController.getLiveUsers);
+
 module.exports = router;

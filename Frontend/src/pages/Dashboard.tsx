@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, AlertTriangle } from 'lucide-react';
+import { BarChart3, AlertTriangle, Users, Activity } from 'lucide-react';
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -10,8 +10,14 @@ function Dashboard() {
   const [realstats, setrealstats] = useState({ casesByVillage: [], casesByTheftType: [] });
   const [crimeTypes, setCrimeTypes] = useState([]);
   const [villages, setVillages] = useState([]);
+  const [liveUsers, setLiveUsers] = useState({ totalLiveUsers: 0, liveUsers: [] });
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
+    // Get user role from localStorage
+    const role = localStorage.getItem('role');
+    setUserRole(role || '');
+
     axios.get(BACKEND_URL+`/api/crime-types`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
@@ -40,6 +46,28 @@ function Dashboard() {
     fetchStates();
   }, []);
 
+  // Fetch live users for admin
+  useEffect(() => {
+    if (userRole !== 'admin') return;
+
+    const fetchLiveUsers = async () => {
+      try {
+        const res = await axios.get(BACKEND_URL+`/api/dashboard/live-users`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        setLiveUsers(res.data);
+      } catch (error) {
+        console.error('Failed to fetch live users:', error);
+      }
+    };
+
+    fetchLiveUsers();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchLiveUsers, 30000);
+
+    return () => clearInterval(interval);
+  }, [userRole]);
+
   let stats = [
     {
       name: t('dashboard.totalAccused'),
@@ -60,6 +88,16 @@ function Dashboard() {
       icon: BarChart3,
     }
   ];
+
+  // Add live users stat for admin only
+  if (userRole === 'admin') {
+    stats.push({
+      name: 'Live Users',
+      value: liveUsers.totalLiveUsers || 0,
+      change: '',
+      icon: Activity,
+    });
+  }
 
   return (
     <div className="space-y-8">
@@ -193,6 +231,83 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Live Users Section - Admin Only */}
+      {userRole === 'admin' && (
+        <div className="rounded-lg bg-white shadow">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold leading-6 text-gray-900 flex items-center">
+                <Users className="h-5 w-5 mr-2 text-blue-500" />
+                Live Users ({liveUsers.totalLiveUsers})
+              </h3>
+              <span className="flex items-center text-xs text-gray-500">
+                <Activity className="h-3 w-3 mr-1 animate-pulse text-green-500" />
+                Auto-refreshing every 30s
+              </span>
+            </div>
+            <div className="mt-8 flow-root">
+              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                  <table className="min-w-full divide-y divide-gray-300">
+                    <thead>
+                      <tr>
+                        <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                          User Name
+                        </th>
+                        <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                          Email
+                        </th>
+                        <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                          Police Station
+                        </th>
+                        <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                          Status
+                        </th>
+                        <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                          Last Active
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {liveUsers.liveUsers.length > 0 ? (
+                        liveUsers.liveUsers.map((user) => (
+                          <tr key={user._id}>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
+                              {user.firstName} {user.lastName}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              {user.email}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              {user.policeStation}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm">
+                              <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                <span className="h-1.5 w-1.5 rounded-full bg-green-600 mr-1.5 animate-pulse"></span>
+                                Online
+                              </span>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                              {new Date(user.lastActive).toLocaleString()}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="5" className="text-center py-4 text-gray-500">
+                            No live users at the moment
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
