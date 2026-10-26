@@ -431,10 +431,10 @@ erDiagram
     DIVISION ||--o{ VILLAGE : "has many"
     CRIMETYPE ||--o{ SUBCRIMETYPE : "has many"
     USER ||--o{ LOG : "performs"
-    DIVISION ..o{ CASE : "selected by name (not referenced)"
-    VILLAGE  ..o{ CASE : "selected by name (not referenced)"
-    CRIMETYPE ..o{ CASE : "selected by name (not referenced)"
-    SUBCRIMETYPE ..o{ CASE : "selected by name (not referenced)"
+    DIVISION |o..o{ CASE : "selected by name (not referenced)"
+    VILLAGE  |o..o{ CASE : "selected by name (not referenced)"
+    CRIMETYPE |o..o{ CASE : "selected by name (not referenced)"
+    SUBCRIMETYPE |o..o{ CASE : "selected by name (not referenced)"
 ```
 
 ---
